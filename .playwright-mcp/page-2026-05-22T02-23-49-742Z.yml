@@ -1,0 +1,267 @@
+- generic:
+  - generic:
+    - generic:
+      - banner:
+        - link:
+          - /url: /admin
+          - img
+        - generic:
+          - generic:
+            - img
+            - textbox
+        - generic:
+          - button:
+            - img
+          - button:
+            - img
+      - generic:
+        - complementary:
+          - generic:
+            - navigation:
+              - generic:
+                - button:
+                  - img
+                  - generic: Network
+                  - img
+              - generic:
+                - button:
+                  - img
+                  - generic: Storage
+                  - img
+              - generic:
+                - button:
+                  - img
+                  - generic: Authentication
+                  - img
+              - generic:
+                - button:
+                  - img
+                  - generic: TLS
+                  - img
+              - generic:
+                - button [expanded]:
+                  - img
+                  - generic: MTA
+                  - img
+                - generic:
+                  - generic:
+                    - button:
+                      - img
+                      - generic: Session
+                  - generic:
+                    - button:
+                      - img
+                      - generic: Inbound
+                  - generic:
+                    - button [expanded]:
+                      - img
+                      - generic: Outbound
+                    - generic:
+                      - button:
+                        - generic: Strategy
+                      - button:
+                        - generic: Routes
+                      - button:
+                        - generic: Connection Strategies
+                      - button:
+                        - generic: TLS Strategies
+                      - button:
+                        - generic: Delivery Schedules
+                      - button:
+                        - generic: Virtual Queues
+                  - generic:
+                    - button:
+                      - img
+                      - generic: Rates & Quotas
+                  - generic:
+                    - button:
+                      - img
+                      - generic: Reports
+                  - generic:
+                    - button:
+                      - img
+                      - generic: Filters
+              - generic:
+                - button:
+                  - img
+                  - generic: Cluster
+                  - img
+              - generic:
+                - button:
+                  - img
+                  - generic: Spam Filter
+                  - img
+              - generic:
+                - button:
+                  - img
+                  - generic: Email
+                  - img
+              - generic:
+                - button:
+                  - img
+                  - generic: Calendar & Contacts
+                  - img
+              - generic:
+                - button:
+                  - img
+                  - generic: Files & Sharing
+                  - img
+              - generic:
+                - button:
+                  - img
+                  - generic: Sieve
+                  - img
+              - generic:
+                - button:
+                  - img
+                  - generic: Security
+                  - img
+              - generic:
+                - button:
+                  - img
+                  - generic: Lookups
+                  - img
+              - button:
+                - img
+                - generic: Search
+              - generic:
+                - button:
+                  - img
+                  - generic: Telemetry
+                  - img
+              - button:
+                - img
+                - generic: Task Manager
+              - button:
+                - img
+                - generic: AI
+                - img
+              - button:
+                - img
+                - generic: Web Applications
+              - button:
+                - img
+                - generic: Enterprise
+          - generic:
+            - button:
+              - img
+            - button:
+              - img
+            - button:
+              - img
+        - main:
+          - generic:
+            - generic:
+              - button:
+                - img
+              - generic:
+                - heading [level=1]: Create route
+            - generic:
+              - generic:
+                - generic:
+                  - generic:
+                    - text: Route type
+                    - combobox:
+                      - generic: Relay Host
+                      - img
+            - generic:
+              - generic:
+                - generic: Relay Host
+              - generic:
+                - generic:
+                  - generic:
+                    - generic:
+                      - generic: Address*
+                    - generic:
+                      - paragraph: The address of the remote SMTP server, which can be an IP address or a domain name
+                    - textbox:
+                      - /placeholder: 127.0.0.1
+                      - text: smtpdm.aliyun.com
+                  - generic:
+                    - generic:
+                      - generic: Port*
+                    - generic:
+                      - paragraph: The port number of the remote server, which is typically 25 for SMTP and 11200 for LMTP
+                    - spinbutton: "465"
+                  - generic:
+                    - generic:
+                      - generic: Protocol*
+                    - generic:
+                      - paragraph: The protocol to use when delivering messages to the remote server, which can be either SMTP or LMTP
+                    - combobox:
+                      - generic: SMTP
+                      - img
+            - generic:
+              - generic:
+                - generic: TLS
+              - generic:
+                - generic:
+                  - generic:
+                    - generic:
+                      - generic: Implicit TLS
+                    - generic:
+                      - paragraph: Whether to use TLS encryption for all connections to the remote server
+                    - switch [checked]
+                  - generic:
+                    - generic:
+                      - generic: Allow Invalid Certs
+                    - generic:
+                      - paragraph: Whether to allow connections to servers with invalid TLS certificates
+                    - switch
+            - generic:
+              - generic:
+                - generic: Authentication
+              - generic:
+                - generic:
+                  - generic:
+                    - generic:
+                      - generic: Username(optional)
+                    - generic:
+                      - paragraph: The username to use when authenticating with the remote server
+                    - textbox: lorenzo@lorenzofeng.top
+                  - generic:
+                    - generic:
+                      - generic: Secret
+                    - generic:
+                      - paragraph: The secret to use when authenticating with the remote server
+                    - generic:
+                      - generic:
+                        - text: Secret
+                        - combobox [expanded]:
+                          - generic: No secret
+                          - img
+            - generic:
+              - generic:
+                - generic: Route Details
+              - generic:
+                - generic:
+                  - generic:
+                    - generic:
+                      - generic: Name*
+                    - generic:
+                      - paragraph: Short identifier for the route
+                    - textbox: aliyun
+                  - generic:
+                    - generic:
+                      - generic: Description(optional)
+                    - generic:
+                      - paragraph: A short description of the route, which can be used to identify it in the list of routes
+                    - textbox: Aliyun DirectMail SMTP Relay
+            - generic:
+              - generic:
+                - generic: Unsaved changes
+                - button: Cancel
+                - button:
+                  - img
+                  - text: Create
+    - list
+  - listbox [ref=e542]:
+    - option "No secret" [active] [selected] [ref=e543]:
+      - img [ref=e546]
+      - generic [ref=e548]: No secret
+    - option "Secret value" [ref=e549]:
+      - generic [ref=e551]: Secret value
+    - option "Secret read from environment variable" [ref=e552]:
+      - generic [ref=e554]: Secret read from environment variable
+    - option "Secret read from file" [ref=e555]:
+      - generic [ref=e557]: Secret read from file

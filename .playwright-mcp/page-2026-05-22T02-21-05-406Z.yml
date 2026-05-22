@@ -1,0 +1,149 @@
+- generic [ref=e2]:
+  - generic [ref=e8]:
+    - banner [ref=e9]:
+      - link "Stalwart Logo" [ref=e10] [cursor=pointer]:
+        - /url: /admin
+        - img "Stalwart Logo" [ref=e11]
+      - generic [ref=e15]:
+        - img
+        - textbox [ref=e16]
+      - generic [ref=e17]:
+        - button "Toggle theme" [ref=e18]:
+          - img
+        - button "User menu" [ref=e19]:
+          - img
+    - generic [ref=e20]:
+      - complementary [ref=e21]:
+        - navigation [ref=e23]:
+          - button "Network" [ref=e97]:
+            - img
+            - generic [ref=e98]: Network
+            - img
+          - button "Storage" [ref=e100]:
+            - img
+            - generic [ref=e101]: Storage
+            - img
+          - button "Authentication" [ref=e103]:
+            - img
+            - generic [ref=e104]: Authentication
+            - img
+          - button "TLS" [ref=e106]:
+            - img
+            - generic [ref=e107]: TLS
+            - img
+          - button "MTA" [ref=e109]:
+            - img
+            - generic [ref=e110]: MTA
+            - img
+          - button "Cluster" [ref=e112]:
+            - img
+            - generic [ref=e113]: Cluster
+            - img
+          - button "Spam Filter" [ref=e115]:
+            - img
+            - generic [ref=e116]: Spam Filter
+            - img
+          - button "Email" [ref=e118]:
+            - img
+            - generic [ref=e119]: Email
+            - img
+          - button "Calendar & Contacts" [ref=e121]:
+            - img
+            - generic [ref=e122]: Calendar & Contacts
+            - img
+          - button "Files & Sharing" [ref=e124]:
+            - img
+            - generic [ref=e125]: Files & Sharing
+            - img
+          - button "Sieve" [ref=e127]:
+            - img
+            - generic [ref=e128]: Sieve
+            - img
+          - button "Security" [ref=e130]:
+            - img
+            - generic [ref=e131]: Security
+            - img
+          - button "Lookups" [ref=e133]:
+            - img
+            - generic [ref=e134]: Lookups
+            - img
+          - button "Search" [ref=e135]:
+            - img
+            - generic [ref=e136]: Search
+          - button "Telemetry" [ref=e138]:
+            - img
+            - generic [ref=e139]: Telemetry
+            - img
+          - button "Task Manager" [ref=e140]:
+            - img
+            - generic [ref=e141]: Task Manager
+          - button "AI" [ref=e142]:
+            - img
+            - generic [ref=e143]: AI
+            - img
+          - button "Web Applications" [ref=e144]:
+            - img
+            - generic [ref=e145]: Web Applications
+          - button "Enterprise" [ref=e146]:
+            - img
+            - generic [ref=e147]: Enterprise
+        - generic [ref=e48]:
+          - button "Management" [ref=e49]:
+            - img
+          - button "Settings" [active] [ref=e50]:
+            - img
+          - button "Account" [ref=e51]:
+            - img
+      - main [ref=e52]:
+        - generic [ref=e148]:
+          - generic [ref=e149]:
+            - button [ref=e150]:
+              - img
+            - generic [ref=e151]:
+              - heading "Network Settings" [level=1] [ref=e152]
+              - paragraph [ref=e153]: Configures network-related settings including the default hostname, domain, TLS certificate, maximum connections, and trusted proxy networks.
+          - generic [ref=e154]:
+            - generic [ref=e156]: Defaults
+            - generic [ref=e158]:
+              - generic [ref=e159]:
+                - generic [ref=e161]: Default Hostname*
+                - paragraph [ref=e163]: The default hostname to use in SMTP greetings, MTA reports and other places where a hostname is needed but not specified.
+                - textbox "mail.example.com" [ref=e164]: mail.lorenzofeng.top
+              - generic [ref=e165]:
+                - generic [ref=e167]: Default Domain*
+                - paragraph [ref=e169]: Default domain to use for authentication and reports.
+                - generic [ref=e170]:
+                  - generic [ref=e171]: lorenzofeng.top
+                  - button "Search" [ref=e172]:
+                    - img
+              - generic [ref=e173]:
+                - generic [ref=e175]: Default Certificate(optional)
+                - paragraph [ref=e177]: Default TLS certificate to use when no SNI is provided by the client
+                - button "Search" [ref=e179]:
+                  - img
+          - generic [ref=e180]:
+            - generic [ref=e182]: Limits
+            - generic [ref=e184]:
+              - generic [ref=e185]:
+                - generic [ref=e187]: Max Connections*
+                - paragraph [ref=e189]: The maximum number of concurrent connections the server will accept
+                - spinbutton [ref=e190]: "8192"
+              - generic [ref=e191]:
+                - generic [ref=e193]: Pool Size(optional)
+                - paragraph [ref=e195]: The number of threads in the global thread pool for CPU intensive tasks. Defaults to the number of CPU cores
+                - spinbutton [ref=e196]
+          - generic [ref=e197]:
+            - generic [ref=e199]: Proxy
+            - generic [ref=e202]:
+              - generic [ref=e204]: Trusted Networks
+              - paragraph [ref=e206]: Enable proxy protocol for connections from these networks
+              - generic [ref=e208]:
+                - textbox "192.168.1.0/24" [ref=e209]
+                - button [disabled]:
+                  - img
+          - generic [ref=e211]:
+            - button "Cancel" [ref=e212]
+            - button "Save" [disabled]:
+              - img
+              - text: Save
+  - list

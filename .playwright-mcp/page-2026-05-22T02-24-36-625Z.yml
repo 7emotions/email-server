@@ -1,0 +1,230 @@
+- generic [ref=e2]:
+  - generic [ref=e8]:
+    - banner [ref=e9]:
+      - link "Stalwart Logo" [ref=e10] [cursor=pointer]:
+        - /url: /admin
+        - img "Stalwart Logo" [ref=e11]
+      - generic [ref=e15]:
+        - img
+        - textbox [ref=e16]
+      - generic [ref=e17]:
+        - button "Toggle theme" [ref=e18]:
+          - img
+        - button "User menu" [ref=e19]:
+          - img
+    - generic [ref=e20]:
+      - complementary [ref=e21]:
+        - navigation [ref=e23]:
+          - button "Network" [ref=e97]:
+            - img
+            - generic [ref=e98]: Network
+            - img
+          - button "Storage" [ref=e100]:
+            - img
+            - generic [ref=e101]: Storage
+            - img
+          - button "Authentication" [ref=e103]:
+            - img
+            - generic [ref=e104]: Authentication
+            - img
+          - button "TLS" [ref=e106]:
+            - img
+            - generic [ref=e107]: TLS
+            - img
+          - generic [ref=e108]:
+            - button "MTA" [expanded] [ref=e109]:
+              - img
+              - generic [ref=e110]: MTA
+              - img
+            - generic [ref=e213]:
+              - button "Session" [ref=e215]:
+                - img
+                - generic [ref=e216]: Session
+              - button "Inbound" [ref=e218]:
+                - img
+                - generic [ref=e219]: Inbound
+              - generic [ref=e220]:
+                - button "Outbound" [expanded] [ref=e221]:
+                  - img
+                  - generic [ref=e222]: Outbound
+                - generic [ref=e232]:
+                  - button "Strategy" [active] [ref=e233]:
+                    - generic [ref=e234]: Strategy
+                  - button "Routes" [ref=e235]:
+                    - generic [ref=e236]: Routes
+                  - button "Connection Strategies" [ref=e237]:
+                    - generic [ref=e238]: Connection Strategies
+                  - button "TLS Strategies" [ref=e239]:
+                    - generic [ref=e240]: TLS Strategies
+                  - button "Delivery Schedules" [ref=e241]:
+                    - generic [ref=e242]: Delivery Schedules
+                  - button "Virtual Queues" [ref=e243]:
+                    - generic [ref=e244]: Virtual Queues
+              - button "Rates & Quotas" [ref=e224]:
+                - img
+                - generic [ref=e225]: Rates & Quotas
+              - button "Reports" [ref=e227]:
+                - img
+                - generic [ref=e228]: Reports
+              - button "Filters" [ref=e230]:
+                - img
+                - generic [ref=e231]: Filters
+          - button "Cluster" [ref=e112]:
+            - img
+            - generic [ref=e113]: Cluster
+            - img
+          - button "Spam Filter" [ref=e115]:
+            - img
+            - generic [ref=e116]: Spam Filter
+            - img
+          - button "Email" [ref=e118]:
+            - img
+            - generic [ref=e119]: Email
+            - img
+          - button "Calendar & Contacts" [ref=e121]:
+            - img
+            - generic [ref=e122]: Calendar & Contacts
+            - img
+          - button "Files & Sharing" [ref=e124]:
+            - img
+            - generic [ref=e125]: Files & Sharing
+            - img
+          - button "Sieve" [ref=e127]:
+            - img
+            - generic [ref=e128]: Sieve
+            - img
+          - button "Security" [ref=e130]:
+            - img
+            - generic [ref=e131]: Security
+            - img
+          - button "Lookups" [ref=e133]:
+            - img
+            - generic [ref=e134]: Lookups
+            - img
+          - button "Search" [ref=e135]:
+            - img
+            - generic [ref=e136]: Search
+          - button "Telemetry" [ref=e138]:
+            - img
+            - generic [ref=e139]: Telemetry
+            - img
+          - button "Task Manager" [ref=e140]:
+            - img
+            - generic [ref=e141]: Task Manager
+          - button "AI" [ref=e142]:
+            - img
+            - generic [ref=e143]: AI
+            - img
+          - button "Web Applications" [ref=e144]:
+            - img
+            - generic [ref=e145]: Web Applications
+          - button "Enterprise" [ref=e146]:
+            - img
+            - generic [ref=e147]: Enterprise
+        - generic [ref=e48]:
+          - button "Management" [ref=e49]:
+            - img
+          - button "Settings" [ref=e50]:
+            - img
+          - button "Account" [ref=e51]:
+            - img
+      - main [ref=e52]:
+        - generic [ref=e620]:
+          - generic [ref=e621]:
+            - button [ref=e622]:
+              - img
+            - generic [ref=e623]:
+              - heading "Outbound Delivery Strategy" [level=1] [ref=e624]
+              - paragraph [ref=e625]: Configure the expressions used to select the routing, scheduling, connection, and TLS strategies applied when delivering messages from the outbound queue
+          - generic [ref=e626]:
+            - generic [ref=e628]: Outbound Strategies
+            - generic [ref=e630]:
+              - generic [ref=e631]:
+                - generic [ref=e633]: Routing
+                - paragraph [ref=e635]: An expression that returns the route name to use when delivering queued messages
+                - generic [ref=e636]:
+                  - generic [ref=e638]:
+                    - generic [ref=e639]:
+                      - generic [ref=e640]: IF
+                      - textbox "Condition" [ref=e641]: is_local_domain(rcpt_domain)
+                      - button [ref=e642]:
+                        - img
+                    - generic [ref=e643]:
+                      - generic [ref=e644]: THEN
+                      - textbox "Result" [ref=e645]: "'local'"
+                  - button "Add condition" [ref=e647]:
+                    - img
+                    - text: Add condition
+                  - generic [ref=e648]:
+                    - generic [ref=e649]: ELSE
+                    - textbox "Default value" [ref=e650]: "'mx'"
+              - generic [ref=e651]:
+                - generic [ref=e653]: Scheduling
+                - paragraph [ref=e655]: An expression that returns the scheduling strategy to use when queueing messages
+                - generic [ref=e656]:
+                  - generic [ref=e658]:
+                    - generic [ref=e659]:
+                      - generic [ref=e660]: IF
+                      - textbox "Condition" [ref=e661]: is_local_domain(rcpt_domain)
+                      - button [ref=e662]:
+                        - img
+                    - generic [ref=e663]:
+                      - generic [ref=e664]: THEN
+                      - textbox "Result" [ref=e665]: "'local'"
+                  - generic [ref=e667]:
+                    - generic [ref=e668]:
+                      - generic [ref=e669]: IF
+                      - textbox "Condition" [ref=e670]: source == 'dsn'
+                      - button [ref=e671]:
+                        - img
+                    - generic [ref=e672]:
+                      - generic [ref=e673]: THEN
+                      - textbox "Result" [ref=e674]: "'dsn'"
+                  - generic [ref=e676]:
+                    - generic [ref=e677]:
+                      - generic [ref=e678]: IF
+                      - textbox "Condition" [ref=e679]: source == 'report'
+                      - button [ref=e680]:
+                        - img
+                    - generic [ref=e681]:
+                      - generic [ref=e682]: THEN
+                      - textbox "Result" [ref=e683]: "'report'"
+                  - button "Add condition" [ref=e685]:
+                    - img
+                    - text: Add condition
+                  - generic [ref=e686]:
+                    - generic [ref=e687]: ELSE
+                    - textbox "Default value" [ref=e688]: "'remote'"
+              - generic [ref=e689]:
+                - generic [ref=e691]: Connection
+                - paragraph [ref=e693]: An expression that returns the connection strategy to use when delivering messages to remote SMTP servers
+                - generic [ref=e694]:
+                  - button "Add condition" [ref=e696]:
+                    - img
+                    - text: Add condition
+                  - textbox "Value" [ref=e698]: "'default'"
+              - generic [ref=e699]:
+                - generic [ref=e701]: TLS
+                - paragraph [ref=e703]: An expression that returns the TLS strategy to use when delivering messages to remote SMTP servers
+                - generic [ref=e704]:
+                  - generic [ref=e706]:
+                    - generic [ref=e707]:
+                      - generic [ref=e708]: IF
+                      - textbox "Condition" [ref=e709]: retry_num > 0 && last_error == 'tls'
+                      - button [ref=e710]:
+                        - img
+                    - generic [ref=e711]:
+                      - generic [ref=e712]: THEN
+                      - textbox "Result" [ref=e713]: "'invalid-tls'"
+                  - button "Add condition" [ref=e715]:
+                    - img
+                    - text: Add condition
+                  - generic [ref=e716]:
+                    - generic [ref=e717]: ELSE
+                    - textbox "Default value" [ref=e718]: "'default'"
+          - generic [ref=e720]:
+            - button "Cancel" [ref=e721]
+            - button "Save" [disabled]:
+              - img
+              - text: Save
+  - list

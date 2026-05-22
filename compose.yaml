@@ -1,218 +1,31 @@
-# Mailu Email Server — Docker Compose Configuration
-# Generated for ugenrobot.com (stable: 2024.06)
+# Stalwart Email Server — Docker Compose
+# Domain: <YOUR_DOMAIN> | Image: ghcr.io/stalwartlabs/stalwart:v0.16
 #
-# Architecture: Caddy (external) → front (internal 8443)
-# Mail ports exposed: 25, 465, 587, 993
-# Web ports: 80/443 NOT exposed (handled by Caddy proxy)
-# All persistent data uses host bind mounts under ${ROOT:-./data}
-
-networks:
-  default:
-    driver: bridge
-    ipam:
-      config:
-        - subnet: ${SUBNET:-192.168.203.0/24}
-  webmail:
-    driver: bridge
-  clamav:
-    driver: bridge
+# Ports:
+#   Mail: 25 (SMTP), 465 (SMTPS), 587 (Submission), 993 (IMAPS), 143 (IMAP)
+#   Admin: 127.0.0.1:8080 (internal, behind Caddy reverse proxy)
 
 services:
-
-  # ── Cache / Database ─────────────────────────────────────
-  redis:
-    image: redis:7.4-alpine
-    container_name: mailu-redis
-    restart: always
-    volumes:
-      - type: bind
-        source: ${ROOT:-./data}/redis
-        target: /data
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-    networks:
-      - default
-
-  # ── DNS Resolver ─────────────────────────────────────────
-  resolver:
-    image: ghcr.io/mailu/unbound:2024.06
-    container_name: mailu-resolver
-    env_file: mailu.env
-    restart: always
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-    networks:
-      default:
-        ipv4_address: ${DNS:-192.168.203.254}
-
-  # ── Front-end (Nginx) ────────────────────────────────────
-  front:
-    image: ghcr.io/mailu/nginx:2024.06
-    container_name: mailu-front
-    restart: always
-    env_file: mailu.env
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
+  stalwart:
+    image: ghcr.io/stalwartlabs/stalwart:v0.16
+    container_name: stalwart
+    restart: unless-stopped
     ports:
-      # Caddy reverse proxy redirects mail.ugenrobot.com:443 → 127.0.0.1:8443
-      - "127.0.0.1:8443:443"
-      # SMTP/IMAP ports — only these are exposed to the network
-      - "${BIND_ADDRESS4:-0.0.0.0}:25:25"
-      - "${BIND_ADDRESS4:-0.0.0.0}:465:465"
-      - "${BIND_ADDRESS4:-0.0.0.0}:587:587"
-      - "${BIND_ADDRESS4:-0.0.0.0}:993:993"
-    healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://127.0.0.1:8008/health/ready || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
+      - "25:25"
+      - "465:465"
+      - "587:587"
+      - "143:143"
+      - "993:993"
+      - "127.0.0.1:8080:8080"
     volumes:
-      - type: bind
-        source: ${ROOT:-./data}/certs
-        target: /certs
-    networks:
-      - default
-      - webmail
-    depends_on:
-      - resolver
-
-  # ── Admin (Flask web UI + REST API) ──────────────────────
-  admin:
-    image: ghcr.io/mailu/admin:2024.06
-    container_name: mailu-admin
-    restart: always
-    env_file: mailu.env
+      - stalwart-data:/opt/stalwart
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
         max-file: "3"
-    volumes:
-      - type: bind
-        source: ${ROOT:-./data}/data
-        target: /data
-      - type: bind
-        source: ${ROOT:-./data}/dkim
-        target: /dkim
-    networks:
-      - default
-    depends_on:
-      - redis
-      - resolver
+    environment:
+      - TZ=Asia/Shanghai
 
-  # ── IMAP (Dovecot) ───────────────────────────────────────
-  imap:
-    image: ghcr.io/mailu/dovecot:2024.06
-    container_name: mailu-imap
-    restart: always
-    env_file: mailu.env
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-    volumes:
-      - type: bind
-        source: ${ROOT:-./data}/mail
-        target: /mail
-    networks:
-      - default
-    depends_on:
-      - front
-      - resolver
-
-  # ── SMTP (Postfix) ───────────────────────────────────────
-  smtp:
-    image: ghcr.io/mailu/postfix:2024.06
-    container_name: mailu-smtp
-    restart: always
-    env_file: mailu.env
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-    volumes:
-      - type: bind
-        source: ${ROOT:-./data}/mailqueue
-        target: /queue
-    networks:
-      - default
-    depends_on:
-      - front
-      - resolver
-
-  # ── Antispam (Rspamd) ────────────────────────────────────
-  antispam:
-    image: ghcr.io/mailu/rspamd:2024.06
-    container_name: mailu-antispam
-    restart: always
-    env_file: mailu.env
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-    volumes:
-      - type: bind
-        source: ${ROOT:-./data}/filter
-        target: /var/lib/rspamd
-    networks:
-      - default
-      - clamav
-    depends_on:
-      - front
-      - redis
-      - antivirus
-      - resolver
-
-  # ── Antivirus (ClamAV) ───────────────────────────────────
-  antivirus:
-    image: clamav/clamav-debian:1.4
-    container_name: mailu-antivirus
-    restart: always
-    mem_limit: 1g
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-    volumes:
-      - type: bind
-        source: ${ROOT:-./data}/clamav
-        target: /var/lib/clamav
-    networks:
-      - clamav
-    depends_on:
-      - resolver
-
-  # ── Webmail (Roundcube) ──────────────────────────────────
-  webmail:
-    image: ghcr.io/mailu/webmail:2024.06
-    container_name: mailu-webmail
-    restart: always
-    env_file: mailu.env
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-    volumes:
-      - type: bind
-        source: ${ROOT:-./data}/webmail
-        target: /data
-    networks:
-      - webmail
-    depends_on:
-      - front
-      - resolver
+volumes:
+  stalwart-data:

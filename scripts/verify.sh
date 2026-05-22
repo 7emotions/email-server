@@ -244,15 +244,15 @@ section_header "DNS Verification"
 # ── Check 13: DNS Resolution (External) ─────────────────────────────────
 echo " [13/14] DNS Resolution"
 
-dns_result=$(host mail.ugenrobot.com 2>/dev/null | grep 'has address' | awk '{print $NF}' || true)
+dns_result=$(host mail.<YOUR_DOMAIN> 2>/dev/null | grep 'has address' | awk '{print $NF}' || true)
 if [ -z "$dns_result" ]; then
-    dns_result=$(dig +short mail.ugenrobot.com 2>/dev/null | grep -v '\.$' | head -1 || true)
+    dns_result=$(dig +short mail.<YOUR_DOMAIN> 2>/dev/null | grep -v '\.$' | head -1 || true)
 fi
 
 if [ -n "$dns_result" ]; then
-    check_result pass "mail.ugenrobot.com resolves" "→ ${dns_result}"
+    check_result pass "mail.<YOUR_DOMAIN> resolves" "→ ${dns_result}"
 else
-    check_result fail "mail.ugenrobot.com does not resolve" \
+    check_result fail "mail.<YOUR_DOMAIN> does not resolve" \
         "Verify DNS A record at your provider"
 fi
 

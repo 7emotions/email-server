@@ -1,0 +1,109 @@
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - banner [ref=e4]:
+      - link "Stalwart Logo" [ref=e5] [cursor=pointer]:
+        - /url: /admin
+        - img "Stalwart Logo" [ref=e6]
+      - generic [ref=e10]:
+        - img
+        - textbox [ref=e11]
+      - generic [ref=e12]:
+        - button "Toggle theme" [ref=e13]:
+          - img
+        - button "User menu" [ref=e14]:
+          - img
+    - generic [ref=e15]:
+      - complementary [ref=e16]:
+        - navigation [ref=e18]:
+          - button "Dashboard" [ref=e282]:
+            - img
+            - generic [ref=e283]: Dashboard
+            - img
+          - button "Directory" [ref=e285]:
+            - img
+            - generic [ref=e286]: Directory
+            - img
+          - generic [ref=e287]:
+            - button "Domains" [expanded] [ref=e288]:
+              - img
+              - generic [ref=e289]: Domains
+              - img
+            - generic [ref=e290]:
+              - button "Domains" [active] [ref=e291]:
+                - generic [ref=e292]: Domains
+              - button "DKIM Signatures" [ref=e293]:
+                - generic [ref=e294]: DKIM Signatures
+          - button "Emails" [ref=e296]:
+            - img
+            - generic [ref=e297]: Emails
+            - img
+          - button "Reports" [ref=e299]:
+            - img
+            - generic [ref=e300]: Reports
+            - img
+          - button "Observability" [ref=e302]:
+            - img
+            - generic [ref=e303]: Observability
+            - img
+          - button "Tasks" [ref=e305]:
+            - img
+            - generic [ref=e306]: Tasks
+            - img
+          - button "Cluster" [ref=e307]:
+            - img
+            - generic [ref=e308]: Cluster
+          - button "Actions" [ref=e309]:
+            - img
+            - generic [ref=e310]: Actions
+        - generic [ref=e43]:
+          - button "Management" [ref=e44]:
+            - img
+          - button "Settings" [ref=e45]:
+            - img
+          - button "Account" [ref=e46]:
+            - img
+      - main [ref=e47]:
+        - generic [ref=e311]:
+          - generic [ref=e312]:
+            - generic [ref=e313]:
+              - heading "Domains" [level=1] [ref=e354]
+              - paragraph [ref=e315]: Manage email domains and their DNS, DKIM, and TLS certificate settings
+            - button "Create domain" [ref=e355]:
+              - img
+              - text: Create domain
+          - button "Filters" [ref=e319]:
+            - img
+            - text: Filters
+            - img
+          - table [ref=e322]:
+            - rowgroup [ref=e323]:
+              - row "Select all Domain Name Enabled Certificate Management DNS Management Actions" [ref=e356]:
+                - columnheader "Select all" [ref=e325]:
+                  - checkbox "Select all" [ref=e326]
+                - columnheader "Domain Name" [ref=e357]:
+                  - generic [ref=e358]: Domain Name
+                - columnheader "Enabled" [ref=e359]:
+                  - generic [ref=e360]: Enabled
+                - columnheader "Certificate Management" [ref=e361]:
+                  - generic [ref=e362]: Certificate Management
+                - columnheader "DNS Management" [ref=e363]:
+                  - generic [ref=e364]: DNS Management
+                - columnheader "Actions" [ref=e333]
+            - rowgroup [ref=e334]:
+              - row "Select item lorenzofeng.top Automatic Manual" [ref=e365] [cursor=pointer]:
+                - cell "Select item" [ref=e366]:
+                  - checkbox "Select item" [ref=e367]
+                - cell "lorenzofeng.top" [ref=e368]
+                - cell [ref=e369]:
+                  - img [ref=e370]
+                - cell "Automatic" [ref=e372]
+                - cell "Manual" [ref=e373]
+                - cell [ref=e374]:
+                  - button [ref=e375]:
+                    - img
+          - generic [ref=e376]:
+            - generic [ref=e377]: Showing 1-1 of 1 domains
+            - generic [ref=e378]:
+              - button "Previous" [disabled]
+              - button "Next" [disabled]
+  - list

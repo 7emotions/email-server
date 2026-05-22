@@ -1,108 +1,278 @@
-# Mailu Email Server -- ugenrobot.com
+# 自建邮件服务器完整指南：Stalwart + 阿里云 + Caddy
 
-Production-grade self-hosted email server for ugenrobot.com, deployed on Alibaba Cloud ECS using Docker Compose. Serves SMTP (Postfix), IMAP (Dovecot), webmail (Roundcube), spam filtering (Rspamd), and antivirus (ClamAV), fronted by Caddy for TLS termination.
+> 在阿里云 ECS 上用 Docker 搭建 Stalwart 邮件服务器，通过阿里云邮件推送绕过 25 端口限制，实现收发邮件。
 
-## Architecture
+## 背景
 
-```
-Internet
-   |
-   +-- Port 25/465/587/993 ----> Docker: mailu-front (nginx)
-   |                               +-- admin (Flask UI)
-   |                               +-- smtp (Postfix)
-   |                               +-- imap (Dovecot)
-   |                               +-- antispam (Rspamd)
-   |                               +-- antivirus (ClamAV)
-   |                               +-- webmail (Roundcube)
-   |                               +-- resolver (Unbound)
-   |                               +-- redis (Cache)
-   |
-   +-- Port 80/443 ----> Caddy (systemd)
-                           +-- mail.ugenrobot.com ---> 127.0.0.1:8443 (front web)
-```
+阿里云 ECS 默认封锁出站 25 端口（SMTP），意味着服务器可以接收邮件，但无法直接向外部发送邮件。解决方案是通过**阿里云邮件推送（DirectMail）** 作为 SMTP 中继——邮件先提交到阿里云的 465 端口，再由阿里云代为投递。
 
-Web traffic (80/443) goes through Caddy, which reverse proxies to the Mailu front container on localhost:8443. Mail ports (25, 465, 587, 993) are exposed directly by the Docker container.
+本文使用 **Stalwart Mail Server**，一个用 Rust 编写的现代化邮件服务器，支持 JMAP/IMAP/SMTP，单容器部署，内存占用仅 ~300MB。
 
-## Prerequisites
+---
 
-- Docker >= 24.0.0, Docker Compose >= 2.0
-- 4 GiB RAM minimum (Mailu + ClamAV need it)
-- Server with static public IP
-- Open ports: 25, 465, 587, 993 (inbound firewall)
-- Domain DNS managed via Tencent Cloud DNSPod
-- Caddy installed (for reverse proxy and TLS)
+## 环境
 
-## Quick Start
+| 项目 | 说明 |
+|------|------|
+| 服务器 | 阿里云 ECS，1.6 GB RAM，40 GB 磁盘 |
+| 操作系统 | Ubuntu / Debian |
+| 域名 | `<YOUR_DOMAIN>`（替换为你的域名） |
+| 邮件服务器 | Stalwart v0.16（Docker） |
+| 反向代理 | Caddy（已安装） |
+| SMTP 中继 | 阿里云邮件推送 |
 
-1. Clone this repository to the target server.
-2. `cp .env.example mailu.env` and edit for your domain, private IP, and secret key.
-3. Configure DNS A/MX records for your domain (see [docs/DNS.md](docs/DNS.md)).
-4. Run `scripts/preflight.sh` on the target server to verify readiness.
-5. `docker compose up -d` to start all services.
-6. Access the admin panel at `https://mail.ugenrobot.com/admin`.
-7. Generate DKIM keys in the admin panel domain settings, then add the public key to DNS.
-8. Run `scripts/verify.sh` to confirm the deployment is working.
+---
 
-## Project Structure
+## 一、安装 Stalwart
 
-```
-compose.yaml         Docker Compose service definitions
-.env.example         Environment variable template (safe to commit)
-mailu.env            Actual environment variables (gitignored)
-caddy/
-  Caddyfile.mail     Reverse proxy config for mail.ugenrobot.com
-scripts/
-  preflight.sh       Pre-deployment server validation (10 checks)
-  verify.sh          Post-deployment verification (TODO)
-docs/
-  DNS.md             Full DNS configuration guide (Tencent Cloud DNSPod)
-  OPERATIONS.md      Day-to-day operations guide (TODO)
+### Docker Compose
+
+`compose.yaml`：
+
+```yaml
+services:
+  stalwart:
+    image: ghcr.io/stalwartlabs/stalwart:v0.16
+    container_name: stalwart
+    command: ["--config", "/opt/stalwart/etc/config.json"]
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - stalwart-data:/opt/stalwart
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    environment:
+      - TZ=Asia/Shanghai
+      - STALWART_RECOVERY_ADMIN=admin:admin123
+
+volumes:
+  stalwart-data:
+    external: true
+    name: email-server_stalwart-data
 ```
 
-## Configuration Reference
+> **注意**：使用 `network_mode: host` 而非端口映射，能避免 Docker proxy 的 TLS 兼容性问题。
 
-Key variables in `mailu.env`:
+### 启动
 
-| Variable | Value | Note |
-|----------|-------|------|
-| `DOMAIN` | `ugenrobot.com` | Your domain |
-| `HOSTNAMES` | `mail.ugenrobot.com` | Mail server hostname |
-| `BIND_ADDRESS4` | `172.25.10.56` | Server private IP (not 0.0.0.0) |
-| `TLS_FLAVOR` | `cert` | Manual cert management via acme.sh DNS-01 |
-| `ANTIVIRUS` | `clamav` | ClamAV antivirus enabled |
-| `WEBMAIL` | `roundcube` | Roundcube webmail enabled |
-| `SUBNET` | `192.168.203.0/24` | Docker internal network |
+```bash
+docker compose up -d
+```
 
-Must stay **empty** (not unset, explicitly blank):
+首次启动时 Stalwart 进入 **bootstrap 模式**，在 8080 端口提供 setup wizard。
 
-- `RELAYNETS` -- leaving this populated creates an open relay
-- `BIND_ADDRESS6` -- IPv6 disabled
-- `SUBNET6` -- IPv6 disabled
+---
 
-## URLs
+## 二、初始配置
 
-| Service | URL |
-|---------|-----|
-| Webmail | `https://mail.ugenrobot.com/webmail` |
-| Admin Panel | `https://mail.ugenrobot.com/admin` |
-| REST API | `https://mail.ugenrobot.com/api` |
-| IMAP | `mail.ugenrobot.com:993` (TLS) |
-| SMTP Submission | `mail.ugenrobot.com:587` (STARTTLS) |
+### 1. 完成 Setup Wizard
 
-## Security Notes
+浏览器打开 `http://<服务器IP>:8080/admin`，用 `admin` / `admin123` 登录。
 
-- Port 80/443 are handled by Caddy (systemd), not by the Mailu container.
-- SMTP/IMAP TLS uses acme.sh DNS-01 challenge -- no port 80 dependency for certificate renewal.
-- All mail ports bind to the server private IP (172.25.10.56), not 0.0.0.0, reducing exposure.
-- IPv6 is explicitly disabled -- Docker IPv6 has known open relay risks.
-- `RELAYNETS` must remain empty. A non-empty relay network allows unauthorized third parties to send mail through this server.
-- ClamAV is memory-limited to 1 GB (`mem_limit: 1g` in compose.yaml) to prevent OOM on low-RAM servers.
+Wizard 会引导你配置：
+- **主机名**：`mail.<YOUR_DOMAIN>`
+- **域名**：`<YOUR_DOMAIN>`
+- **存储后端**：RocksDB（默认）
+- **目录**：Internal Directory
+- **TLS**：选择 ACME（Let's Encrypt）自动获取证书
 
-## Documentation
+完成向导后 Stalwart 重启进入正常模式，`config.json` 自动生成。
 
-- [DNS Setup Guide](docs/DNS.md) -- complete DNS records reference and verification for Tencent Cloud DNSPod, including SPF, DKIM, DMARC, MTA-STS, and TLS-RPT.
-- [Operations Guide](docs/OPERATIONS.md) -- day-to-day management, backup, log rotation, and troubleshooting (TODO).
+### 2. 创建邮箱账户
 
-## License
+Admin 面板 → Management → Directory → Accounts → Create user：
+- 邮箱：`lorenzo@<YOUR_DOMAIN>`
+- 用户名：`lorenzo`
+- 设置密码
 
-This project is a deployment configuration for [Mailu](https://mailu.io/), which is licensed under the MIT License. The deployment scripts and documentation in this repository are provided as-is for reference.
+---
+
+## 三、DNS 记录配置
+
+在域名 DNS 控制台添加以下记录：
+
+```
+# MX（邮件交换）
+<YOUR_DOMAIN>  MX  10  mail.<YOUR_DOMAIN>
+
+# SPF（发信身份验证）
+<YOUR_DOMAIN>  TXT  v=spf1 mx include:spf1.dm.aliyun.com -all
+
+# DKIM（从 Stalwart 管理面板获取）
+v1-ed25519-20260521._domainkey.<YOUR_DOMAIN>  TXT  v=DKIM1; k=ed25519; h=sha256; p=...
+v1-rsa-20260521._domainkey.<YOUR_DOMAIN>      TXT  v=DKIM1; k=rsa; h=sha256; p=...
+
+# DMARC
+_dmarc.<YOUR_DOMAIN>  TXT  v=DMARC1; p=reject; rua=mailto:postmaster@<YOUR_DOMAIN>
+
+# 服务发现（可选）
+_submissions._tcp.<YOUR_DOMAIN>  SRV  0 1 465 mail.<YOUR_DOMAIN>
+_imaps._tcp.<YOUR_DOMAIN>        SRV  0 1 993 mail.<YOUR_DOMAIN>
+```
+
+DKIM 公钥从 Admin 面板 → Management → Domains → 点域名右边的 `...` → View DNS Records 获取。
+
+---
+
+## 四、SSL 证书
+
+Stalwart 内置 ACME 支持，但如果你有 Caddy 或 certbot 管理的证书，可以挂载复用：
+
+### 挂载 certbot 证书
+
+```yaml
+volumes:
+  - /etc/letsencrypt:/etc/letsencrypt:ro
+```
+
+然后在 Admin 面板 → Settings → Server → TLS → Certificates 添加：
+
+- Certificate: `%{file:/etc/letsencrypt/live/<YOUR_DOMAIN>/fullchain.pem}%`
+- Private Key: `%{file:/etc/letsencrypt/live/<YOUR_DOMAIN>/privkey.pem}%`
+
+> **权限问题**：确保 `chmod o+x /etc/letsencrypt/live /etc/letsencrypt/archive && chmod 644 /etc/letsencrypt/archive/<YOUR_DOMAIN>/privkey*.pem`，否则 Stalwart（UID 2000）无法读取私钥。
+
+---
+
+## 五、Caddy 反向代理
+
+Caddy 代理 admin 面板（Stalwart 内部 8080 端口）：
+
+```
+mail.<YOUR_DOMAIN> {
+    reverse_proxy localhost:8080 {
+        header_up Host {host}
+        header_up X-Real-IP {remote_host}
+    }
+    encode gzip zstd
+}
+```
+
+---
+
+## 六、配置阿里云 SMTP 中继
+
+### 1. 开通阿里云邮件推送
+
+登录 [阿里云邮件推送控制台](https://dm.console.aliyun.com)，开通服务。
+
+### 2. 创建发信域名
+
+新建域名 `<YOUR_DOMAIN>`，按提示配置 DNS 验证记录（SPF、MX 等）。验证通过后状态变为绿色。
+
+### 3. 创建发信地址
+
+新建发信地址 `lorenzo@<YOUR_DOMAIN>`，点击「设置 SMTP 密码」生成密码（**注意：这是独立于邮箱密码的 SMTP 密码**）。
+
+### 4. 在 Stalwart 中配置 Relay
+
+Admin 面板 → Settings → MTA → Outbound：
+
+#### Routes → Create route
+
+- **类型**：Relay Host
+- Address: `smtpdm.aliyun.com`
+- Port: `465`
+- Protocol: SMTP
+- **Implicit TLS**: ✅ 开启
+- **Username**: `lorenzo@<YOUR_DOMAIN>`
+- **Secret**: `Secret value` → 填阿里云 SMTP 密码
+- **Name**: `aliyun`
+
+#### TLS Strategies
+
+点 `default` → Security Requirements：
+- **DANE**: Disabled
+- **MTA-STS**: Disabled
+- **STARTTLS**: Optional
+
+#### Strategy → Routing
+
+| | Condition | Result |
+|---|---|---|
+| IF | `is_local_domain(rcpt_domain)` | `'local'` |
+| ELSE | | `'aliyun'` |
+
+#### Strategy → Scheduling
+
+| | Condition | Result |
+|---|---|---|
+| IF | `is_local_domain(rcpt_domain)` | `'local'` |
+| IF | `source == 'dsn'` | `'dsn'` |
+| IF | `source == 'report'` | `'report'` |
+| ELSE | | `'remote'` |
+
+---
+
+## 七、客户端配置
+
+| 协议 | 服务器 | 端口 | 加密 |
+|------|--------|------|------|
+| SMTP 发信 | `mail.<YOUR_DOMAIN>` | 465 | SSL/TLS |
+| IMAP 收信 | `mail.<YOUR_DOMAIN>` | 993 | SSL/TLS |
+| POP3 收信 | `mail.<YOUR_DOMAIN>` | 995 | SSL/TLS |
+
+**用户名**：完整邮箱地址（如 `lorenzo@<YOUR_DOMAIN>`）
+**密码**：Stalwart 中设置的邮箱密码
+
+---
+
+## 八、测试
+
+### 发送测试邮件
+
+```bash
+# 通过自有服务器提交
+swaks --to 你的测试邮箱@qq.com \
+  --from lorenzo@<YOUR_DOMAIN> \
+  --server mail.<YOUR_DOMAIN> --port 465 --tls \
+  --auth LOGIN --auth-user lorenzo@<YOUR_DOMAIN> --auth-password 你的密码
+```
+
+### 在线评分
+
+向 [mail-tester.com](https://mail-tester.com) 发送一封邮件，查看 SPF/DKIM/DMARC 评分。
+
+---
+
+## 常见问题
+
+### 1. 收不到邮件
+
+- 检查 MX 记录是否指向 `mail.<YOUR_DOMAIN>`
+- 确保阿里云安全组开放端口 25
+- 检查 Routing Strategy 的 IF 条件是 `is_local_domain(rcpt_domain)`
+
+### 2. 发不出邮件（550 Mailbox not found / 535 Auth failure）
+
+- 确认阿里云 SMTP 密码与邮箱密码不同
+- 阿里云邮件推送的「发信地址」需设置独立的 SMTP 密码
+- 确认 Routes 中 `aliyun` 的 Username 和 Secret 正确
+
+### 3. Admin 面板 502
+
+- Caddy 代理的目标端口是否正确（`localhost:8080` 或 `localhost:443`）
+- 检查 `network_mode: host` 是否生效
+
+### 4. TLS 证书相关问题
+
+- certbot 证书文件权限：`chmod o+x /etc/letsencrypt/live`
+- Stalwart 证书路径格式：`%{file:/path/to/cert.pem}%`
+
+---
+
+## 总结
+
+通过 Stalwart + 阿里云邮件推送的组合，你在阿里云 ECS 上拥有了一套功能完整的邮件服务器：
+
+- ✅ 收发邮件（SMTP + IMAP）
+- ✅ Let's Encrypt SSL/TLS 加密
+- ✅ SPF / DKIM / DMARC 全配置
+- ✅ 阿里云邮件中继绕过 25 端口限制
+- ✅ 网页管理面板
+- ✅ 仅需 ~300MB 内存
+
+之后可以考虑启用 ClamAV 反病毒、Sieve 邮件过滤、多域名支持等高级功能。
+
+---
+
+*本文写于 2026 年 5 月，基于 Stalwart v0.16.6。*

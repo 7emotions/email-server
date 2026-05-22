@@ -1,0 +1,210 @@
+- generic [ref=e2]:
+  - generic [ref=e8]:
+    - banner [ref=e9]:
+      - link "Stalwart Logo" [ref=e10] [cursor=pointer]:
+        - /url: /admin
+        - img "Stalwart Logo" [ref=e11]
+      - generic [ref=e15]:
+        - img
+        - textbox [ref=e16]
+      - generic [ref=e17]:
+        - button "Toggle theme" [ref=e18]:
+          - img
+        - button "User menu" [ref=e19]:
+          - img
+    - generic [ref=e20]:
+      - complementary [ref=e21]:
+        - navigation [ref=e23]:
+          - button "Network" [ref=e97]:
+            - img
+            - generic [ref=e98]: Network
+            - img
+          - button "Storage" [ref=e100]:
+            - img
+            - generic [ref=e101]: Storage
+            - img
+          - button "Authentication" [ref=e103]:
+            - img
+            - generic [ref=e104]: Authentication
+            - img
+          - button "TLS" [ref=e106]:
+            - img
+            - generic [ref=e107]: TLS
+            - img
+          - generic [ref=e108]:
+            - button "MTA" [expanded] [ref=e109]:
+              - img
+              - generic [ref=e110]: MTA
+              - img
+            - generic [ref=e213]:
+              - button "Session" [ref=e215]:
+                - img
+                - generic [ref=e216]: Session
+              - button "Inbound" [ref=e218]:
+                - img
+                - generic [ref=e219]: Inbound
+              - generic [ref=e220]:
+                - button "Outbound" [expanded] [ref=e221]:
+                  - img
+                  - generic [ref=e222]: Outbound
+                - generic [ref=e232]:
+                  - button "Strategy" [ref=e233]:
+                    - generic [ref=e234]: Strategy
+                  - button "Routes" [ref=e235]:
+                    - generic [ref=e236]: Routes
+                  - button "Connection Strategies" [ref=e237]:
+                    - generic [ref=e238]: Connection Strategies
+                  - button "TLS Strategies" [ref=e239]:
+                    - generic [ref=e240]: TLS Strategies
+                  - button "Delivery Schedules" [ref=e241]:
+                    - generic [ref=e242]: Delivery Schedules
+                  - button "Virtual Queues" [ref=e243]:
+                    - generic [ref=e244]: Virtual Queues
+              - button "Rates & Quotas" [ref=e224]:
+                - img
+                - generic [ref=e225]: Rates & Quotas
+              - button "Reports" [ref=e227]:
+                - img
+                - generic [ref=e228]: Reports
+              - button "Filters" [ref=e230]:
+                - img
+                - generic [ref=e231]: Filters
+          - button "Cluster" [ref=e112]:
+            - img
+            - generic [ref=e113]: Cluster
+            - img
+          - button "Spam Filter" [ref=e115]:
+            - img
+            - generic [ref=e116]: Spam Filter
+            - img
+          - button "Email" [ref=e118]:
+            - img
+            - generic [ref=e119]: Email
+            - img
+          - button "Calendar & Contacts" [ref=e121]:
+            - img
+            - generic [ref=e122]: Calendar & Contacts
+            - img
+          - button "Files & Sharing" [ref=e124]:
+            - img
+            - generic [ref=e125]: Files & Sharing
+            - img
+          - button "Sieve" [ref=e127]:
+            - img
+            - generic [ref=e128]: Sieve
+            - img
+          - button "Security" [ref=e130]:
+            - img
+            - generic [ref=e131]: Security
+            - img
+          - button "Lookups" [ref=e133]:
+            - img
+            - generic [ref=e134]: Lookups
+            - img
+          - button "Search" [ref=e135]:
+            - img
+            - generic [ref=e136]: Search
+          - button "Telemetry" [ref=e138]:
+            - img
+            - generic [ref=e139]: Telemetry
+            - img
+          - button "Task Manager" [ref=e140]:
+            - img
+            - generic [ref=e141]: Task Manager
+          - button "AI" [ref=e142]:
+            - img
+            - generic [ref=e143]: AI
+            - img
+          - button "Web Applications" [ref=e144]:
+            - img
+            - generic [ref=e145]: Web Applications
+          - button "Enterprise" [ref=e146]:
+            - img
+            - generic [ref=e147]: Enterprise
+        - generic [ref=e48]:
+          - button "Management" [ref=e49]:
+            - img
+          - button "Settings" [ref=e50]:
+            - img
+          - button "Account" [ref=e51]:
+            - img
+      - main [ref=e52]:
+        - generic [ref=e402]:
+          - generic [ref=e403]:
+            - button [ref=e404]:
+              - img
+            - heading "Create route" [level=1] [ref=e406]
+          - generic [ref=e410]:
+            - text: Route type
+            - combobox [ref=e411]:
+              - generic: Relay Host
+              - img [ref=e412]
+          - generic [ref=e414]:
+            - generic [ref=e416]: Relay Host
+            - generic [ref=e418]:
+              - generic [ref=e472]:
+                - generic [ref=e474]: Address*
+                - paragraph [ref=e476]: The address of the remote SMTP server, which can be an IP address or a domain name
+                - textbox "127.0.0.1" [ref=e477]: smtpdm.aliyun.com
+              - generic [ref=e478]:
+                - generic [ref=e480]: Port*
+                - paragraph [ref=e482]: The port number of the remote server, which is typically 25 for SMTP and 11200 for LMTP
+                - spinbutton [ref=e483]: "465"
+              - generic [ref=e484]:
+                - generic [ref=e486]: Protocol*
+                - paragraph [ref=e488]: The protocol to use when delivering messages to the remote server, which can be either SMTP or LMTP
+                - combobox [ref=e489]:
+                  - generic [ref=e490]: SMTP
+                  - img
+          - generic [ref=e438]:
+            - generic [ref=e440]: TLS
+            - generic [ref=e442]:
+              - generic [ref=e491]:
+                - generic [ref=e493]: Implicit TLS
+                - paragraph [ref=e495]: Whether to use TLS encryption for all connections to the remote server
+                - switch [checked] [ref=e496] [cursor=pointer]
+              - generic [ref=e497]:
+                - generic [ref=e499]: Allow Invalid Certs
+                - paragraph [ref=e501]: Whether to allow connections to servers with invalid TLS certificates
+                - switch [ref=e502] [cursor=pointer]
+          - generic [ref=e503]:
+            - generic [ref=e505]: Authentication
+            - generic [ref=e507]:
+              - generic [ref=e508]:
+                - generic [ref=e510]: Username(optional)
+                - paragraph [ref=e512]: The username to use when authenticating with the remote server
+                - textbox [ref=e513]: lorenzo@lorenzofeng.top
+              - generic [ref=e514]:
+                - generic [ref=e516]: Secret
+                - paragraph [ref=e518]: The secret to use when authenticating with the remote server
+                - generic [ref=e519]:
+                  - generic [ref=e520]:
+                    - text: Secret
+                    - combobox [active] [ref=e521]:
+                      - generic: Secret value
+                      - img [ref=e522]
+                  - generic [ref=e558]:
+                    - generic [ref=e560]: Secret*
+                    - paragraph [ref=e562]: Password or secret value
+                    - generic [ref=e563]:
+                      - textbox [ref=e564]
+                      - button [ref=e565]:
+                        - img
+          - generic [ref=e524]:
+            - generic [ref=e526]: Route Details
+            - generic [ref=e528]:
+              - generic [ref=e529]:
+                - generic [ref=e531]: Name*
+                - paragraph [ref=e533]: Short identifier for the route
+                - textbox [ref=e534]: aliyun
+              - generic [ref=e535]:
+                - generic [ref=e537]: Description(optional)
+                - paragraph [ref=e539]: A short description of the route, which can be used to identify it in the list of routes
+                - textbox [ref=e540]: Aliyun DirectMail SMTP Relay
+          - generic [ref=e456]:
+            - generic [ref=e541]: Unsaved changes
+            - button "Cancel" [ref=e457]
+            - button "Create" [ref=e458]:
+              - img
+              - text: Create
+  - list

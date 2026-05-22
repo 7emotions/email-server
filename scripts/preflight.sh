@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 #
-# preflight.sh — Mailu Email Server Pre-Flight Validation
+# preflight.sh — Stalwart Email Server Pre-Flight Validation
 #
-# Performs 10 readiness checks before deploying Mailu. Must pass all
+# Performs 8 readiness checks before deploying Stalwart. Must pass all
 # checks before the deployment should proceed.
 #
 # Usage: ./preflight.sh
@@ -44,12 +44,12 @@ check_result() {
 }
 
 echo "╔══════════════════════════════════════════════════════════════╗"
-echo "║       Mailu Server Pre-Flight Validation                    ║"
+echo "║       Stalwart Server Pre-Flight Validation                 ║"
 echo "╚══════════════════════════════════════════════════════════════╝"
 echo ""
 
 # ── Check 1: Docker Daemon ─────────────────────────────────────────────
-echo " [1/10] Docker Daemon"
+echo " [1/8] Docker Daemon"
 if docker info >/dev/null 2>&1; then
     check_result pass "Docker daemon is running"
 else
@@ -58,7 +58,7 @@ else
 fi
 
 # ── Check 2: Docker Compose ────────────────────────────────────────────
-echo " [2/10] Docker Compose"
+echo " [2/8] Docker Compose"
 if docker compose version >/dev/null 2>&1; then
     check_result pass "Docker Compose is available"
 else
@@ -66,12 +66,12 @@ else
         "Install: sudo apt install docker-compose-plugin"
 fi
 
-# ── Check 3: Required Ports Free (25, 465, 587, 993) ───────────────────
-echo " [3/10] Required Ports (25, 465, 587, 993)"
+# ── Check 3: Required Ports Free (25, 465, 587, 993, 8080) ─────────────
+echo " [3/8] Required Ports (25, 465, 587, 993, 8080)"
 all_ports_free=true
 occupied_ports=""
 
-for port in 25 465 587 993; do
+for port in 25 465 587 993 8080; do
     if ss -tlnp "sport = :$port" 2>/dev/null | grep -q LISTEN; then
         all_ports_free=false
         occupied_ports="$occupied_ports $port"
@@ -79,14 +79,14 @@ for port in 25 465 587 993; do
 done
 
 if [ "$all_ports_free" = true ]; then
-    check_result pass "Ports 25, 465, 587, 993 are all free"
+    check_result pass "Ports 25, 465, 587, 993, 8080 are all free"
 else
     check_result fail "Ports occupied:${occupied_ports}" \
-        "Stop the service listening on those ports before deploying Mailu"
+        "Stop the service listening on those ports before deploying Stalwart"
 fi
 
 # ── Check 4: iptables DOCKER Chain ─────────────────────────────────────
-echo " [4/10] iptables DOCKER Chain"
+echo " [4/8] iptables DOCKER Chain"
 if iptables -L DOCKER -n >/dev/null 2>&1; then
     check_result pass "DOCKER chain exists in iptables"
 else
@@ -94,20 +94,20 @@ else
         "Restart Docker: sudo systemctl restart docker"
 fi
 
-# ── Check 5: RAM >= 3.5 GiB ───────────────────────────────────────────
-echo " [5/10] System Memory"
+# ── Check 5: RAM >= 1.0 GiB ────────────────────────────────────────────
+echo " [5/8] System Memory"
 total_mib=$(free -m | awk '/Mem:/ {print $2}')
 total_gib=$(awk "BEGIN {printf \"%.1f\", $total_mib / 1024}")
 
-if [ "$total_mib" -ge 3584 ]; then
+if [ "$total_mib" -ge 1024 ]; then
     check_result pass "Total RAM: ${total_gib} GiB (${total_mib} MiB)"
 else
     check_result fail "Insufficient RAM: ${total_gib} GiB (${total_mib} MiB)" \
-        "Upgrade instance to at least 4 GiB RAM (3.5 GiB minimum)"
+        "Upgrade instance to at least 1 GiB RAM"
 fi
 
 # ── Check 6: Disk Space >= 20 GB Free ──────────────────────────────────
-echo " [6/10] Disk Space"
+echo " [6/8] Disk Space"
 free_gb=$(df -BG / | awk 'NR==2 {print $4}' | sed 's/G//')
 
 if [ "$free_gb" -ge 20 ]; then
@@ -118,7 +118,7 @@ else
 fi
 
 # ── Check 7: Swap Configured ───────────────────────────────────────────
-echo " [7/10] Swap"
+echo " [7/8] Swap"
 swap_out=$(swapon --show 2>/dev/null)
 
 if [ -n "$swap_out" ]; then
@@ -129,40 +129,8 @@ else
         "Create swap: sudo fallocate -l 2G /swapfile && sudo mkswap /swapfile && sudo swapon /swapfile"
 fi
 
-# ── Check 8: Detect Private IP (BIND_ADDRESS4) ─────────────────────────
-echo " [8/10] Private IP Detection"
-private_ip=$(ip -4 addr show | grep inet | grep -v 127.0.0.1 \
-    | grep -v '172\.17\.0\.' | awk '{print $2}' | cut -d/ -f1 | head -1)
-
-if [ -n "$private_ip" ]; then
-    check_result pass "Detected private IP: ${private_ip}"
-else
-    check_result fail "Could not detect private IP" \
-        "Verify network interface has a private IPv4 address (excl. 127.0.0.1, 172.17.0.x)"
-fi
-
-# ── Check 9: No Existing Postfix / Dovecot ─────────────────────────────
-echo " [9/10] Existing Mail Services"
-conflicting=false
-conflict_list=""
-
-for svc in postfix dovecot; do
-    status=$(systemctl is-active "$svc" 2>/dev/null || echo "inactive")
-    if [ "$status" = "active" ]; then
-        conflicting=true
-        conflict_list="$conflict_list $svc"
-    fi
-done
-
-if [ "$conflicting" = false ]; then
-    check_result pass "No conflicting mail services (Postfix/Dovecot)"
-else
-    check_result fail "Conflicting service(s) active:${conflict_list}" \
-        "Stop them: sudo systemctl stop${conflict_list}"
-fi
-
-# ── Check 10: DNS Resolution ───────────────────────────────────────────
-echo " [10/10] DNS Resolution"
+# ── Check 8: DNS Resolution ────────────────────────────────────────────
+echo " [8/8] DNS Resolution"
 if host localhost >/dev/null 2>&1; then
     check_result pass "DNS resolution working"
 else

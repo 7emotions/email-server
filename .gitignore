@@ -1,22 +1,6 @@
-# Environment secrets
-.env
-mailu.env
-
-# Mailu runtime data
-data/
-dkim/
-certs/
-
-# Project meta
 .sisyphus/
-
-# OS
-.DS_Store
-Thumbs.db
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
+docs/
+.env.example
+.secrets/
+*.pem
+*.key

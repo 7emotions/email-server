@@ -1,17 +1,15 @@
-# Caddy reverse proxy config for Mailu email server
+# Caddy reverse proxy config for Stalwart email server admin UI
 #
 # Integration: Add this line to /etc/caddy/Caddyfile:
 #   import /path/to/Caddyfile.mail
 #
 # Caddy handles TLS for mail.ugenrobot.com automatically.
-# Mailu front container listens on 127.0.0.1:8443 (internal only).
+# Stalwart admin UI listens on 127.0.0.1:8080 (internal only).
 
 mail.ugenrobot.com {
-	reverse_proxy 127.0.0.1:8443 {
+	reverse_proxy 127.0.0.1:8080 {
 		header_up Host {host}
 		header_up X-Real-IP {remote_host}
-		header_up X-Forwarded-For {remote_host}
-		header_up X-Forwarded-Proto {scheme}
 	}
 	encode gzip zstd
 }
