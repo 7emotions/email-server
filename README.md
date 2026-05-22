@@ -42,7 +42,7 @@ services:
       - /etc/letsencrypt:/etc/letsencrypt:ro
     environment:
       - TZ=Asia/Shanghai
-      - STALWART_RECOVERY_ADMIN=admin:admin123
+      - STALWART_RECOVERY_ADMIN=admin:yourTempPassword
 
 volumes:
   stalwart-data:
@@ -66,7 +66,11 @@ docker compose up -d
 
 ### 1. 完成 Setup Wizard
 
-浏览器打开 `http://<服务器IP>:8080/admin`，用 `admin` / `admin123` 登录。
+浏览器打开 `http://<服务器IP>:8080/admin`。
+
+首次启动时 Stalwart 进入 **bootstrap 模式**，日志会打印临时管理员密码。如果你设置了 `STALWART_RECOVERY_ADMIN=admin:yourTempPass`，则使用你指定的临时凭据登录。
+
+Setup Wizard 最后一步会要求你创建**永久管理员账户**（用户名 + 密码），这个才是之后日常使用的凭据。临时密码在向导完成后自动失效。
 
 Wizard 会引导你配置：
 - **主机名**：`mail.<YOUR_DOMAIN>`
@@ -75,7 +79,7 @@ Wizard 会引导你配置：
 - **目录**：Internal Directory
 - **TLS**：选择 ACME（Let's Encrypt）自动获取证书
 
-完成向导后 Stalwart 重启进入正常模式，`config.json` 自动生成。
+完成向导后 Stalwart 重启进入正常模式。此时可以移除 `STALWART_RECOVERY_ADMIN` 环境变量，之后用永久管理员账户登录。
 
 ### 2. 创建邮箱账户
 
