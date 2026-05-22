@@ -1,5 +1,0 @@
-[     773ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://mail.lorenzofeng.top/logo/:0
-[   51061ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://mail.lorenzofeng.top/logo/:0
-[   51086ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://mail.lorenzofeng.top/favicon.ico/:0
-[  117578ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://mail.lorenzofeng.top/logo/:0
-[  309938ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ https://mail.lorenzofeng.top/admin/Settings/x:MtaRoute/new:0
